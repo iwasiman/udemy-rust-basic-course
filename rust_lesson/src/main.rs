@@ -1,5 +1,12 @@
 use std::ops::RangeInclusive;
 mod section6; // 実体はルート/section6.rs
+mod section7; // 実体はルート/section7.rs
+mod section8; // 実体はルート/section8.rs
+mod section9;
+mod test_module;
+use section9::sec9main::{double_area, Circle, Rectangle, Shape}; // 構造体だけでなくトレイトもuse文に必要
+mod section10;
+mod section11;
 
 fn main() {
     println!("Hello, world!");
@@ -20,10 +27,9 @@ fn main() {
     const B: i32 = 2; // 関数の内側でも宣言できる constは型名の宣言が必須
     println!("const Bは {}", B);
 
-    let float1:f64 = 3.142;
-    let float2:f64 = float1; // 型の指定は推論にまかせて書かなくても良いし、書いても良い。VSCodeが出してるのを消そうとして：が消えたりするのに注意。
+    let float1: f64 = 3.142;
+    let float2: f64 = float1; // 型の指定は推論にまかせて書かなくても良いし、書いても良い。VSCodeが出してるのを消そうとして：が消えたりするのに注意。
     println!("float型の変数 {} {}", float1, float2);
-
 
     numeric();
     tupple();
@@ -37,6 +43,46 @@ fn main() {
     loops();
 
     section6::sec6main::lesson();
+    section7::sec7main::lesson();
+    section8::sec8main::lesson();
+    test_module::sub_module1::sub_sub_module1::test_fn1(); // sub_module1.rs の中でさらにpub mod で囲っているから。
+    crate::test_module::sub_module1::sub_sub_module1::test_fn1(); // 同じ
+                                                                  //test_module::sub_module2::sub_module2::test_fn2(); // module `sub_module2` is private
+
+    rust_lesson::say_hello(); //lib.rsにおいたものはパッケージ名と同じライブラリと認識
+
+    section9::sec9main::lesson();
+    let rect = Rectangle {
+        width: 4.0,
+        height: 5.0,
+    };
+    let circle = Circle { radius: 2.0 };
+    println!("");
+    println!("section9 Rectangleの面積 {}", rect.calc_area());
+    println!("section9 Rectangleの周囲 {}", rect.calc_perimeter());
+    Rectangle::do_something();
+    //rect.do_something() //できない。なんで？
+    println!(
+        "section9 Rectangleのデフォルトメソッド {}",
+        rect.default_something()
+    );
+    println!("section9 トレイトを引数にとった関数 {}", double_area(&rect));
+
+    println!("section9 Circleの面積 {}", circle.calc_area());
+    println!("section9 Circleの周囲 {}", circle.calc_perimeter());
+    println!(
+        "section9 Cicleのデフォルトメソッド {}",
+        circle.default_something()
+    );
+    Circle::do_something();
+    println!(
+        "section9 トレイトを引数にとった関数 {}",
+        double_area(&circle)
+    );
+
+    section10::sec10main::lesson();
+    section11::sec11main::lesson();
+
 }
 
 //const B: i32 = 2; // 関数の外側で宣言できる
@@ -149,7 +195,7 @@ fn functions() {
     println!("関数コール {}", add(100, 200));
     let c = add(200, 500); // 書かなくても c: i32になる。背景色が変わるのでVSCodeが表示している。
     println!("関数コール {}", c);
-    let say_hello_result:() = say_hello(); // 型推論でユニット型が表示。 変数名もスネークケースでないと警告してくれる。
+    let say_hello_result: () = say_hello(); // 型推論でユニット型が表示。 変数名もスネークケースでないと警告してくれる。
     println!("関数コール {:?}", say_hello_result); // ()
 }
 
@@ -185,14 +231,13 @@ fn blocks() {
         100;
     };
     println!("xxxは {:?}", xxx); // ()になる
-
 }
 
 fn ifs() {
     // IFは文でなく式。
     let x = 5;
     // ifの条件部分は常に論理型必須。0とか空文字とかは入らない。
-    if x> 0 {
+    if x > 0 {
         println!("xは0より大きい");
     }
     // 式なのでこうも書ける
@@ -203,7 +248,6 @@ fn ifs() {
         0
     };
     println!("y= {:?}", y); //5
-
 }
 
 fn matchs() {
@@ -214,7 +258,7 @@ fn matchs() {
         1 => {
             println!("いちだよ");
             println!("もういっちょ"); // 複数あったらブロックで囲ってセミコロン
-        },
+        }
         // ここでmatch式を終わらせるとi32の範囲を網羅していないのでエラー。すごい。
         //non-exhaustive patterns: `i32::MIN..=-1_i32` and `2_i32..=i32::MAX` not covered the matched value is of type `i32`
         _ => println!("そのた"),
@@ -239,12 +283,12 @@ fn loops() {
         cnt2 += 1;
     }
 
-    for i in [1,2,3] {
+    for i in [1, 2, 3] {
         println!("今度はfor {}", i); // 3回出力
     }
     let r: RangeInclusive<i32> = 1..=10;
-    for x in r { // ここでx：i32と書くとコンパイルエラー
+    for x in r {
+        // ここでx：i32と書くとコンパイルエラー
         println!("for in で自乗 {}", x * x); // 10回出力
     }
-
 }
