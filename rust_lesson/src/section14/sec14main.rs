@@ -5,6 +5,10 @@ pub fn lesson() {
     commandline_args();
     standard_inputs(false);
     file_inputs();
+    file_outputs();
+    manipulate_jsons();
+    manipulate_pathes();
+    file_system_access_functions();
 
 
 }
@@ -71,5 +75,121 @@ fn file_inputs() {
     println!("バイト配列で読み込むよ {:?}", bytes); // [82, 117, 115, 116, 10, 80, 121, 116, 104, 111, 110, 10, 74, 97, 118, 97, 10, 67, 10, 67, 43, 43]
     println!("String::from_utf8()で変換 {:?}", String::from_utf8(bytes).unwrap()); //"Rust\nPython\nJava\nC\nC++"
 
+
+}
+
+use std::fs::OpenOptions;
+
+fn file_outputs() {
+    println!("--------------- ファイル出力");
+    let mut f1 = File::create("src/sample2.txt").unwrap();
+    let bytes = b"write sample!/n";
+    println!("バイトの文字列 {:?}", bytes); //[119, 114, 105, 116, 101, 32, 115, 97, 109, 112, 108, 101, 33, 47, 110]
+    f1.write_all(bytes).unwrap(); //src/sample2.txtができる。
+
+    let mut f2 = File::create("src/sample3.txt").unwrap();
+    writeln!(f2, "Hello, {}", "Rust").unwrap(); // マクロを使うと直接文字列を出力できる。
+
+    // ファイルオープンの補足
+    // ファイルが存在したら上書きでなく末尾に追加にする
+    let mut f_op1 = OpenOptions::new()
+    .append(true)
+    .open("src/sample1.txt").unwrap();
+    writeln!(f_op1, "ついかだよ").unwrap();
+
+    // ファイルが存在しない場合のみ作成
+    // let mut f_op2 = OpenOptions::new()
+    // .write(true)
+    // .create_new(true)
+    // .open("src/sampleNew.txt").unwrap();
+    // writeln!(f_op2, "ついかだよ").unwrap();
+
+    // Rustは変数がドロップされる時点で自動的にファイルクローズが行われるのでコード不要。クローズ忘れも起こらない。素晴らしい！!
+}
+
+use serde::{Serialize, Deserialize};
+fn manipulate_jsons() {
+    println!("--------------- JSONの操作");
+    // serde サード serialize + deserialize の造語。
+
+    // Cargo.toml のdependenciesに 追加。deriveはderiveアトリビュートで諸々使えるようにするため。
+    // serde = { version = "1.0", features = ["derive"]}
+
+    let p = Person {
+        name: String::from("Smith"),
+        age: 99,
+        phones: vec![
+            String::from("080-xxx"),
+            String::from("080-xxx"),
+        ],
+    };
+    let json_data = serde_json::to_string_pretty(&p).unwrap();
+    println!("変換されたJSON文字列 {}", json_data);
+    let mut f = File::create("src/sample.json").unwrap();
+    writeln!(f, "{}", json_data).unwrap();
+
+    let f = File::open("src/sample.json").unwrap();
+    let buf_reader = BufReader::new(f);
+    let data: Person = serde_json::from_reader(buf_reader).unwrap(); // 構造体に変換する時は型の指定が必要。
+    println!("ファイルからJSONを読んで構造体に {:?}", data);
+
+
+
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Person {
+    name: String,
+    age: u8, // こうすると0−255 8bit符号なし整数型
+    phones: Vec<String>,
+}
+
+use std::path::{Path, PathBuf};
+fn manipulate_pathes() {
+    println!("--------------- パスの操作");
+    let path = Path::new("src");
+    println!("パス src は存在するか {:?}", path.exists()); // true
+    println!("パス src はディレクトリか {:?}", path.is_dir()); // true
+    println!("パス src はファイルか {:?}", path.is_file()); // false
+    println!("ファイル名かディレクトリ名を返す {:?}", path.file_name()); // Some("src")
+
+    // パスバッファはパスを変更するメソッドも使える。
+    let mut path_buf = PathBuf::from("src");
+    path_buf.push("sample1.txt");
+    println!("パスバッファにファイルを追加 {:?}", path_buf); //"src/sample1.txt"
+    path_buf.set_file_name("path.txt");
+    println!("追加したファイル名を変更 {:?}", path_buf); // "src/path.txt"
+    path_buf.pop();
+    println!("popで一番下の階層を取り除く {:?}", path_buf); // "src"
+
+}
+
+use std::os::unix::prelude::PermissionsExt;
+fn file_system_access_functions() {
+    println!("--------------- ファイルシステムアクセス関数");
+    // ディレクトリを作って消す 存在するとこのままではpanic
+    fs::create_dir("src/test1").unwrap();
+    fs::create_dir_all("src/test2/test2-1/test2-1-1").unwrap();
+    fs::remove_dir("src/test1").unwrap();
+    fs::remove_dir_all("src/test2").unwrap();
+    // ファイルの内容をコピー
+    fs::copy("src/fs_access_sample1.txt", "src/fs_access_sample3.txt").unwrap();
+    // renameで移動もできる
+    fs::create_dir("src/test1").unwrap();
+    fs::rename("src/fs_access_sample3.txt", "src/test1/moved.txt").unwrap();
+    fs::remove_dir_all("src/test1").unwrap();
+
+    // パーミション変更
+    let mut permissions = fs::metadata("src/sample2.txt").unwrap().permissions(); // メタデータを取得
+    permissions.set_mode(0o600); // 8進数なので0oをつける
+    fs::set_permissions("src/sample2.txt", permissions).unwrap();
+    /*
+    $ ls -l src/sample2.txt
+    -rw-r--r--  1 naoki  staff  15  8 12 14:18 src/sample2.txt  // 644
+    $ cargo run --bin rust_lesson
+    $ ls -l src/sample2.txt
+    -rw-------  1 naoki  staff  15  8 12 14:23 src/sample2.txt  // 600に変わっている！
+
+    */
 
 }

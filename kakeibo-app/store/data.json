@@ -1,0 +1,34 @@
+[
+  {
+    "name": "aaa",
+    "category": {
+      "Income": "Bonus"
+    },
+    "price": 1000,
+    "date": "2021-05-05"
+  },
+  {
+    "name": "あdfdf",
+    "category": {
+      "Expense": "Food"
+    },
+    "price": 10,
+    "date": "2021-05-05"
+  },
+  {
+    "name": "ぼーなす",
+    "category": {
+      "Income": "Bonus"
+    },
+    "price": 10000,
+    "date": "2021-08-05"
+  },
+  {
+    "name": "ハンバーグ",
+    "category": {
+      "Expense": "Food"
+    },
+    "price": 1380,
+    "date": "2021-08-05"
+  }
+]
