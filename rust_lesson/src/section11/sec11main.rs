@@ -6,6 +6,7 @@ pub fn lesson() {
     closures();
     iterators();
     iterators_methods1();
+    iterators_methods2();
 }
 
 fn closures() {
@@ -117,9 +118,30 @@ fn iterators_methods1() {
     let f2: Vec<_> = v.iter().map(filter_fn).collect(); //  これでもいけるかな
     println!("イテレーターから作ったベクタ {:?}", f2); //  [false, true, false, true, false]
 
-    let filter_fn_4map = |x: &&i32| *x % 2 == 0; // 偶数だけ取り出すクロージャが入った変数
+    let filter_fn_4map = |x: &&i32| *x % 2 == 0; // 偶数だけ取り出すクロージャが入った変数∏
     let f3: Vec<_> = v.iter().filter(filter_fn_4map).collect(); // これでもいけるかな
     println!("イテレーターから作ったベクタ {:?}", f3); //  [2, 4]
 
     
+}
+
+fn iterators_methods2() {
+    println!("--------------- イテレーターのメソッド Part2");
+    let v = vec![1,2,3,4,5];
+    let c = v.iter().count();
+    println!("count() {:?}", c); // 5
+    let s: i32 = v.iter().sum(); // Rustの仕様で型の明記が必要
+    println!("sum() {:?}",s) ; // 15
+    let p: i32 = v.iter().product(); // Rustの仕様で型の明記が必要 5! の 5*4*3*2*1 になる
+    println!("product() {:?}", p);
+    let max = v.iter().max();
+    let min = v.iter().min();
+    println!("max() {:?}", max); // Some(5)
+    println!("min() {:?}", min); // Some(1)
+
+    let s2: i32 = v.iter().fold(0, |sum, x| sum + x);
+    println!("fold()メソッド内にクロージャで累積を計算するよう指定 {}", s2); //15
+
+
+
 }

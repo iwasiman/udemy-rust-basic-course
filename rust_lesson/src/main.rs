@@ -7,6 +7,9 @@ mod test_module;
 use section9::sec9main::{double_area, Circle, Rectangle, Shape}; // 構造体だけでなくトレイトもuse文に必要
 mod section10;
 mod section11;
+mod section12;
+mod section13;
+mod section14;
 
 fn main() {
     println!("Hello, world!");
@@ -82,6 +85,9 @@ fn main() {
 
     section10::sec10main::lesson();
     section11::sec11main::lesson();
+    section12::sec12main::lesson();
+    section13::sec13main::lesson();
+    section14::sec14main::lesson();
 
 }
 
