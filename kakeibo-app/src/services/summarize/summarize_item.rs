@@ -1,11 +1,11 @@
 use std::{collections::{BTreeSet, BTreeMap}};
 use chrono::{NaiveDate, Datelike};
-use crate::models;
 use crate::services;
+use crate::models::item::*; // このuse文で、Item構造体についてるメソッド new とかも使えるようになる。
 
-pub fn run(file_path: &str) {
-    println!("かけいぼのしゅうけいをおこなうます");
-    let data = services::io::read_data_or_panic(file_path);
+/// 集計処理の実処理を実行します。
+pub fn summarize(file_path: &str) {
+    let data = services::io::read_all_data_or_panic(file_path);
 
     let target_dates: BTreeSet<NaiveDate> = get_target_dates(&data);
     let mut result_table: BTreeMap<NaiveDate, i32> = BTreeMap::new();
@@ -17,20 +17,23 @@ pub fn run(file_path: &str) {
     print_table(result_table);
 }
 
-fn get_target_dates(data: &Vec<models::Item>) -> BTreeSet<NaiveDate> {
+// 以下、内部メソッド
+
+fn get_target_dates(data: &Vec<Item>) -> BTreeSet<NaiveDate> {
     let target_dates: BTreeSet<_> = data.iter().map(|item| {
         item.get_first_day()
     }).collect();
     target_dates
 }
 
-fn get_filtered_data(data: &Vec<models::Item>, filter_date: NaiveDate) -> Vec<&models::Item> {
-    let filtered_data: Vec<&models::Item> = data.iter().filter(|item| {
+fn get_filtered_data(data: &Vec<Item>, filter_date: NaiveDate) -> Vec<&Item> {
+    // i以下のようにフルパス的に書いてもエラーにならない。一部だけitem::Itemだとだめ。
+    let filtered_data: Vec<&crate::models::item::Item> = data.iter().filter(|item| {
         item.get_year() == filter_date.year() && (item.get_month() == filter_date.month())
     }).collect();
     filtered_data
 }
-fn summarize_data(data: &Vec<&models::Item>) -> i32 {
+fn summarize_data(data: &Vec<&Item>) -> i32 {
     let mut sum = 0;
     for item in data {
         sum += item.get_price_for_summary();
@@ -47,7 +50,6 @@ fn format_price(price: i32) -> String {
         format!("+{}", price)
     } else {
         format!("{}", price)
-
     }
 }
 
@@ -60,20 +62,22 @@ fn print_table(result_table: BTreeMap<NaiveDate, i32>) {
 }
 
 #[cfg(test)]
-mod summarize_test {
+mod summarize_item_test {
+    use crate::models::category::*;  //テスト中岳必要なので、use文はこの位置に必要。
+
     use super::*; // 親モジュールを全てインポート
 
-    fn get_test_data() -> Vec<models::Item> {
+    fn get_test_data() -> Vec<Item> {
         vec![
-            super::models::Item::new (
+            Item::new (
                 "旅行".to_string(),
-                models::Category::Expense(models::ExpenseCategory::Food),
+                Category::Expense(ExpenseCategory::Food),
                 5000,
                 NaiveDate::from_ymd(2022, 8, 18),
             ),
-            super::models::Item::new (
+            Item::new (
                 "アマギフ券".to_string(),
-                models::Category::Income(models::IncomeCategory::Bonus),
+                Category::Income(IncomeCategory::Bonus),
                 4000,
                 NaiveDate::from_ymd(2022, 8, 18),
             ),

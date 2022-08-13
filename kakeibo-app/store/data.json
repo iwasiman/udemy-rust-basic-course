@@ -30,5 +30,29 @@
     },
     "price": 1380,
     "date": "2021-08-05"
+  },
+  {
+    "name": "aaa",
+    "category": {
+      "Income": "Other"
+    },
+    "price": 1234,
+    "date": "2022-08-13"
+  },
+  {
+    "name": "rrr",
+    "category": {
+      "Expense": "Hobby"
+    },
+    "price": 123,
+    "date": "2022-08-13"
+  },
+  {
+    "name": "ere",
+    "category": {
+      "Income": "Other"
+    },
+    "price": 12345,
+    "date": "2022-08-13"
   }
 ]
