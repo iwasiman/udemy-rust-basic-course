@@ -1,7 +1,6 @@
-use crate::consts::REGISTER_TYPE_EXPENSE;
-use crate::consts::REGISTER_TYPE_INCOME;
-use crate::consts::SERVICE_TYPE_REGISTER;
-use crate::consts::SERVICE_TYPE_SUMMARIZE;
+use crate::consts::register_type;
+//use crate::consts::RegisterType;
+use crate::consts::service_type;
 pub struct InputValidator {}
 
 impl InputValidator {
@@ -16,14 +15,16 @@ impl InputValidator {
 // 以下、InputValidator構造体に紐付いていたが外だし
 pub fn validate_service_type(service_type: u8) {
     match service_type {
-        SERVICE_TYPE_REGISTER | SERVICE_TYPE_SUMMARIZE => {}
+        service_type::REGISTER | service_type::SUMMARIZE => {}
         _ => panic!("入力値がせかいへいわでない {}", service_type),
     }
 }
 
 pub fn validate_register_type(register_type: u8) {
+    // let expense = RegisterType::Expense;
+    // let income = RegisterType::Income;
     match register_type {
-        REGISTER_TYPE_INCOME | REGISTER_TYPE_EXPENSE => {}
+        register_type::INCOME | register_type::EXPENSE => {}
         _ => panic!("登録種別がせかいへいわでない {}", register_type),
     }
 }
