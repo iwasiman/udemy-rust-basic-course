@@ -1,5 +1,5 @@
-use crate::services::io;
 use crate::models::item::Item;
+use crate::services::io;
 
 /// アイテムをJSON化して保存します。
 pub fn store_item(item: Item, file_path: &str) {

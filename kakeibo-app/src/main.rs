@@ -1,5 +1,5 @@
-use std::{io};
 use kakeibo_app::services;
+use std::io;
 //mod services;
 //mod services::validate; //できない
 use kakeibo_app::models;
@@ -28,7 +28,7 @@ fn main() {
     // 先頭のmod で mod services::validate; のように階層指定は使えない。
     // use kakeibo_app::services; か mod services; したあとなら...
     services::validate::do_simple_validation(); // 構造体でなければ、モジュール名::モジュール名::関数名でいける。
-    // use services::validate::do_simple_validation; した後なら...
+                                                // use services::validate::do_simple_validation; した後なら...
     do_simple_validation(); // use文は階層がいくらでも書ける。
 
     if service_type == 0 {
@@ -37,7 +37,6 @@ fn main() {
     } else if service_type == 1 {
         println!("エレガントォォォに集計サービスを実行する！");
         services::summarize::run(FILE_PATH);
-
     }
 }
 

@@ -14,7 +14,7 @@ pub fn read_data_or_create_new_data(file_path: &str) -> Vec<Item> {
         Ok(f) => {
             let buf_reader = BufReader::new(f);
             serde_json::from_reader(buf_reader).expect("デシリアライズに任務失敗！")
-        },
+        }
         Err(_) => {
             println!("新規ファイルを作成するます");
             Vec::new()
@@ -26,7 +26,8 @@ pub fn read_data_or_create_new_data(file_path: &str) -> Vec<Item> {
 pub fn read_all_data_or_panic(file_path: &str) -> Vec<Item> {
     let the_file = File::open(file_path).expect("ファイルオープンに失敗！直ちに連絡を！");
     let buf_reader = BufReader::new(the_file);
-    let data: Vec<_> = serde_json::from_reader(buf_reader).expect("デシリアライズ失敗！続行不可能！");
+    let data: Vec<_> =
+        serde_json::from_reader(buf_reader).expect("デシリアライズ失敗！続行不可能！");
 
     if data.len() == 0 {
         panic!("データがないあるます");

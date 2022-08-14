@@ -4,5 +4,4 @@ mod summarize_item;
 pub fn run(file_path: &str) {
     println!("かけいぼのしゅうけいをおこなうます");
     summarize_item::summarize(file_path);
-
 }

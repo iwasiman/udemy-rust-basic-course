@@ -1,7 +1,7 @@
-use std::{collections::{BTreeSet, BTreeMap}};
-use chrono::{NaiveDate, Datelike};
+use crate::models::item::*;
 use crate::services;
-use crate::models::item::*; // このuse文で、Item構造体についてるメソッド new とかも使えるようになる。
+use chrono::{Datelike, NaiveDate};
+use std::collections::{BTreeMap, BTreeSet}; // このuse文で、Item構造体についてるメソッド new とかも使えるようになる。
 
 /// 集計処理の実処理を実行します。
 pub fn summarize(file_path: &str) {
@@ -20,17 +20,18 @@ pub fn summarize(file_path: &str) {
 // 以下、内部メソッド
 
 fn get_target_dates(data: &Vec<Item>) -> BTreeSet<NaiveDate> {
-    let target_dates: BTreeSet<_> = data.iter().map(|item| {
-        item.get_first_day()
-    }).collect();
+    let target_dates: BTreeSet<_> = data.iter().map(|item| item.get_first_day()).collect();
     target_dates
 }
 
 fn get_filtered_data(data: &Vec<Item>, filter_date: NaiveDate) -> Vec<&Item> {
     // i以下のようにフルパス的に書いてもエラーにならない。一部だけitem::Itemだとだめ。
-    let filtered_data: Vec<&crate::models::item::Item> = data.iter().filter(|item| {
-        item.get_year() == filter_date.year() && (item.get_month() == filter_date.month())
-    }).collect();
+    let filtered_data: Vec<&crate::models::item::Item> = data
+        .iter()
+        .filter(|item| {
+            item.get_year() == filter_date.year() && (item.get_month() == filter_date.month())
+        })
+        .collect();
     filtered_data
 }
 fn summarize_data(data: &Vec<&Item>) -> i32 {
@@ -63,26 +64,25 @@ fn print_table(result_table: BTreeMap<NaiveDate, i32>) {
 
 #[cfg(test)]
 mod summarize_item_test {
-    use crate::models::category::*;  //テスト中岳必要なので、use文はこの位置に必要。
+    use crate::models::category::*; //テスト中岳必要なので、use文はこの位置に必要。
 
     use super::*; // 親モジュールを全てインポート
 
     fn get_test_data() -> Vec<Item> {
         vec![
-            Item::new (
+            Item::new(
                 "旅行".to_string(),
                 Category::Expense(ExpenseCategory::Food),
                 5000,
                 NaiveDate::from_ymd(2022, 8, 18),
             ),
-            Item::new (
+            Item::new(
                 "アマギフ券".to_string(),
                 Category::Income(IncomeCategory::Bonus),
                 4000,
                 NaiveDate::from_ymd(2022, 8, 18),
             ),
         ]
-
     }
 
     #[test]
@@ -92,6 +92,5 @@ mod summarize_item_test {
         expected.insert(NaiveDate::from_ymd(2022, 8, 1));
 
         assert_eq!(get_target_dates(&test_data), expected);
-
     }
 }

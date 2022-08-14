@@ -1,5 +1,4 @@
-use serde::{Serialize, Deserialize};
-
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum Category {
@@ -20,4 +19,3 @@ pub enum ExpenseCategory {
     Hobby,
     Other,
 }
-

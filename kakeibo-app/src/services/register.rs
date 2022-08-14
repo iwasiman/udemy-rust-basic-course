@@ -10,7 +10,3 @@ pub fn run(file_path: &str) {
 
     store_item::store_item(item, file_path);
 }
-
-
-
-

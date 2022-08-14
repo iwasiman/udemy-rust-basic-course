@@ -1,7 +1,6 @@
-use chrono::{NaiveDate, Datelike};
-use serde::{Serialize, Deserialize};
 use crate::models::category::*;
-
+use chrono::{Datelike, NaiveDate};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Item {
@@ -12,7 +11,12 @@ pub struct Item {
 }
 impl Item {
     pub fn new(name: String, category: Category, price: u32, date: NaiveDate) -> Self {
-        Item {name, category, price, date}
+        Item {
+            name,
+            category,
+            price,
+            date,
+        }
     }
 
     pub fn get_category(register_type: u8, category_type: u8) -> Category {
@@ -38,7 +42,7 @@ impl Item {
     }
 
     pub fn get_month(&self) -> u32 {
-        self.date.month() 
+        self.date.month()
     }
 
     pub fn get_first_day(&self) -> NaiveDate {
